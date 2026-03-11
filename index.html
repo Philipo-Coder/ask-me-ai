@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask me! - AI Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-bg: #0f0f0f;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 12px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 15px;
+            border-radius: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: black;
+            border-bottom-right-radius: 2px;
+            font-weight: 500;
+        }
+
+        .ai {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border-left: 5px solid var(--gold);
+            border-bottom-left-radius: 2px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .voice-btn {
+            background: none;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 8px;
+            padding: 5px;
+        }
+
+        .input-area {
+            background: var(--card-bg);
+            padding: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-top: 1px solid #333;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 45px 15px 20px;
+            border-radius: 30px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: white;
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .send-btn {
+            background: var(--gold);
+            color: black;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background: #fff;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-style: italic;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><i class="fas fa-robot"></i> Ask me!</h1>
+    <p>Msaidizi wako wa akili (AI) kwa kila jambo</p>
+</header>
+
+<div id="chat-box">
+    <div class="msg ai">
+        <strong>Habari Philipo!</strong> 👋<br>
+        Karibu kwenye ulimwengu wa maarifa. Naweza kukusaidia nini leo? Unaweza kuniuliza kuhusu Monkey Quest, kodi, au kitu chochote!
+    </div>
+</div>
+
+<div id="loading"><i class="fas fa-spinner fa-spin"></i> Ask me! anajibu...</div>
+
+<div class="input-area">
+    <div class="input-wrapper">
+        <input type="text" id="user-input" placeholder="Andika swali lako hapa..." onkeypress="if(event.key==='Enter') ulizaAI()">
+    </div>
+    <button class="send-btn" onclick="ulizaAI()">
+        <i class="fas fa-paper-plane"></i>
+    </button>
+</div>
+
+<script>
+    const API_KEY = "AIzaSyAQ7sW8LkBO_3Zt4smRdgYL9FT9YWuzmIU";
+
+    async function ulizaAI() {
+        const input = document.getElementById('user-input');
+        const box = document.getElementById('chat-box');
+        const loading = document.getElementById('loading');
+        const swali = input.value;
+
+        if (!swali) return;
+
+        // Ongeza swali la mtumiaji
+        box.innerHTML += `<div class="msg user">${swali}</div>`;
+        loading.style.display = 'block';
+        input.value = '';
+        box.scrollTop = box.scrollHeight;
+
+        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+        try {
+            const res = await fetch(URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: swali }] }]
+                })
+            });
+
+            const data = await res.json();
+            
+            if (data.candidates && data.candidates[0].content) {
+                const jibu = data.candidates[0].content.parts[0].text;
+                const messageId = "msg-" + Date.now();
+                
+                let aiHtml = `
+                    <div class="msg ai">
+                        <strong>Ask me!:</strong><br>
+                        <span id="${messageId}">${jibu.replace(/\n/g, '<br>')}</span><br>
+                        <button class="voice-btn" onclick="ongea('${messageId}')">
+                            <i class="fas fa-volume-up"></i> Sikiliza Jibu
+                        </button>
+                    </div>`;
+                
+                box.innerHTML += aiHtml;
+            } else {
+                box.innerHTML += `<div class="msg ai" style="color:red;">Samahani, jaribu tena baadaye.</div>`;
+            }
+        } catch (e) {
+            box.innerHTML += `<div class="msg ai" style="color:red;">Hitilafu ya mtandao! Hakikisha una bando.</div>`;
+        }
+
+        loading.style.display = 'none';
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // Sehemu ya Sauti (Voice)
+    function ongea(id) {
+        const text = document.getElementById(id).innerText;
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = text;
+        speech.lang = 'sw-TZ'; // Inajaribu kutumia Kiswahili, ikikosa itatumia English
+        speech.rate = 1;
+        window.speechSynthesis.speak(speech);
+    }
+</script>
+
+</body>
+      </html>
+      
