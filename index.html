@@ -17,7 +17,6 @@
         .input-area { background: var(--card); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #333; }
         input { flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background: #222; color: white; outline: none; }
         .btn { background: var(--gold); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.3s; }
-        .btn:active { transform: scale(0.9); }
         #preview-container { display: none; padding: 10px; background: #111; text-align: center; border-top: 1px solid var(--gold); }
         #img-prev { max-width: 120px; border-radius: 10px; border: 2px solid var(--gold); }
     </style>
@@ -26,11 +25,11 @@
 
 <header>
     <h2 style="color: var(--gold); margin: 0; letter-spacing: 1px;">🤖 ASK ME! PRO</h2>
-    <small style="opacity: 0.8;">Salama • Picha • Sauti</small>
+    <small style="opacity: 0.8;">Maboresho: Picha • Sauti • Usalama</small>
 </header>
 
 <div id="chat-box">
-    <div class="msg ai">Tayari Philipo! 👋 Key yako mpya imewekwa kwa usalama. Unaweza kunitumia picha au kuniuliza swali lolote sasa.</div>
+    <div class="msg ai">Tayari Philipo! 👋 Key yako imehakikiwa na sasa nipo tayari. Unaweza kuniuliza chochote, kunitumia picha, au kusikiliza majibu yangu.</div>
 </div>
 
 <div id="preview-container">
@@ -48,7 +47,7 @@
 </div>
 
 <script>
-    // TUNAIGAWANYA KEY YAKO MPYA VIPANDE 4 KWA USALAMA
+    // UKAGUZI WA KEY: Hapa tumeweka ile key yako ya AIzaSyCmq... kwa kuigawa
     const p1 = "AIzaSyCmq";
     const p2 = "oadUNQy9KCYGE";
     const p3 = "wPnaQJKTLUr";
@@ -102,6 +101,8 @@
             });
 
             const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+            
             const jibu = data.candidates[0].content.parts[0].text;
             const id = "jibu-" + Date.now();
 
@@ -113,7 +114,7 @@
                     </button>
                 </div>`;
         } catch (e) {
-            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Kuna hitilafu. Tafadhali hakikisha Key yako kule Netlify na GitHub zinalingana.</div>`;
+            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Kuna shida kidogo. Hakikisha Key uliyoweka Netlify ni sawa na hii. Er: ${e.message}</div>`;
         }
         box.scrollTop = box.scrollHeight;
     }
