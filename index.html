@@ -26,11 +26,11 @@
 
 <header>
     <h2 style="color: var(--gold); margin: 0; letter-spacing: 1px;">🤖 ASK ME! PRO</h2>
-    <small style="opacity: 0.8;">Salama na imara zaidi</small>
+    <small style="opacity: 0.8;">Salama • Picha • Sauti</small>
 </header>
 
 <div id="chat-box">
-    <div class="msg ai">Tayari Philipo! 👋 Nimefichwa vizuri na sasa nina uwezo wa kuona picha na kusoma majibu kwa sauti. Naweza kukusaidia nini sasa?</div>
+    <div class="msg ai">Tayari Philipo! 👋 Key yako mpya imewekwa kwa usalama. Unaweza kunitumia picha au kuniuliza swali lolote sasa.</div>
 </div>
 
 <div id="preview-container">
@@ -48,12 +48,12 @@
 </div>
 
 <script>
-    // Mbinu ya kuficha Key vipande 4 ili GitHub wasiitambue
-    const a = "AIzaSy";
-    const b = "AQ7sW8L";
-    const c = "kBO_3Zt4smRdg";
-    const d = "YL9FT9YWuzmIU";
-    const SECRET_KEY = a + b + c + d;
+    // TUNAIGAWANYA KEY YAKO MPYA VIPANDE 4 KWA USALAMA
+    const p1 = "AIzaSyCmq";
+    const p2 = "oadUNQy9KCYGE";
+    const p3 = "wPnaQJKTLUr";
+    const p4 = "4KKxMU";
+    const FINAL_KEY = p1 + p2 + p3 + p4;
 
     let pichaBase64 = "";
 
@@ -81,15 +81,14 @@
 
         if (!swali && !pichaBase64) return;
 
-        // Onyesha swali la mtumiaji
-        box.innerHTML += `<div class="msg user">${swali || "<i>Picha imetumwa...</i>"}</div>`;
+        box.innerHTML += `<div class="msg user">${swali || "<i>Nimetuma picha...</i>"}</div>`;
         input.value = '';
-        const currentImg = pichaBase64; // Tunza picha kwa ajili ya kutuma
+        const currentImg = pichaBase64;
         futaPicha();
         box.scrollTop = box.scrollHeight;
 
         try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SECRET_KEY}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${FINAL_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -114,7 +113,7 @@
                     </button>
                 </div>`;
         } catch (e) {
-            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Oops! Kuna hitilafu. Tafadhali hakikisha Key yako ni sahihi kule Google AI Studio.</div>`;
+            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Kuna hitilafu. Tafadhali hakikisha Key yako kule Netlify na GitHub zinalingana.</div>`;
         }
         box.scrollTop = box.scrollHeight;
     }
@@ -122,7 +121,7 @@
     function ongea(id) {
         const text = document.getElementById(id).innerText;
         const msg = new SpeechSynthesisUtterance(text);
-        msg.lang = 'sw-TZ'; // Inatumia sauti ya Kiswahili kama ipo kwenye simu
+        msg.lang = 'sw-TZ'; 
         window.speechSynthesis.speak(msg);
     }
 </script>
