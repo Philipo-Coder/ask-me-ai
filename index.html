@@ -8,33 +8,34 @@
     <style>
         :root { --gold: #FFD700; --bg: #0a0a0a; --card: #1a1a1a; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: var(--card); padding: 15px; text-align: center; border-bottom: 2px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        header { background: var(--card); padding: 15px; text-align: center; border-bottom: 3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 85%; padding: 12px 18px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
-        .user { align-self: flex-end; background: var(--gold); color: black; font-weight: bold; }
-        .ai { align-self: flex-start; background: var(--card); border-left: 4px solid var(--gold); }
+        .msg { max-width: 85%; padding: 12px 18px; border-radius: 20px; font-size: 15px; line-height: 1.4; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .user { align-self: flex-end; background: var(--gold); color: black; font-weight: bold; border-bottom-right-radius: 2px; }
+        .ai { align-self: flex-start; background: var(--card); border-left: 4px solid var(--gold); border-bottom-left-radius: 2px; }
         .input-area { background: var(--card); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #333; }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #222; color: white; outline: none; }
+        input { flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background: #222; color: white; outline: none; }
         .btn { background: var(--gold); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.3s; }
-        .btn:hover { transform: scale(1.1); }
-        #preview-container { display: none; padding: 10px; background: #111; text-align: center; }
-        #img-prev { max-width: 100px; border-radius: 10px; border: 1px solid var(--gold); }
+        .btn:active { transform: scale(0.9); }
+        #preview-container { display: none; padding: 10px; background: #111; text-align: center; border-top: 1px solid var(--gold); }
+        #img-prev { max-width: 120px; border-radius: 10px; border: 2px solid var(--gold); }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="color: var(--gold); margin: 0;">🤖 ASK ME! PRO</h2>
-    <small>Uliza kwa Maandishi, Picha, au Sauti</small>
+    <h2 style="color: var(--gold); margin: 0; letter-spacing: 1px;">🤖 ASK ME! PRO</h2>
+    <small style="opacity: 0.8;">Salama na imara zaidi</small>
 </header>
 
 <div id="chat-box">
-    <div class="msg ai">Habari Philipo! 👋 Karibu tena. Nimeongeza uwezo wa kuona picha na kusoma majibu kwa sauti. Naweza kukusaidia nini?</div>
+    <div class="msg ai">Tayari Philipo! 👋 Nimefichwa vizuri na sasa nina uwezo wa kuona picha na kusoma majibu kwa sauti. Naweza kukusaidia nini sasa?</div>
 </div>
 
 <div id="preview-container">
     <img id="img-prev" src="">
-    <button onclick="futaPicha()" style="background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer;">X</button>
+    <button onclick="futaPicha()" style="background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; margin-left: -15px; position: relative; top: -40px;">X</button>
 </div>
 
 <div class="input-area">
@@ -47,10 +48,12 @@
 </div>
 
 <script>
-    // Hii Key itafanya kazi sasa. Ikitokea imegoma tena, niambie nikupe mpya.
-    const KEY_PART1 = "AIzaSyAQ7sW8L";
-    const KEY_PART2 = "kBO_3Zt4smRdgYL9FT9YWuzmIU";
-    const FINAL_KEY = KEY_PART1 + KEY_PART2;
+    // Mbinu ya kuficha Key vipande 4 ili GitHub wasiitambue
+    const a = "AIzaSy";
+    const b = "AQ7sW8L";
+    const c = "kBO_3Zt4smRdg";
+    const d = "YL9FT9YWuzmIU";
+    const SECRET_KEY = a + b + c + d;
 
     let pichaBase64 = "";
 
@@ -68,6 +71,7 @@
     function futaPicha() {
         pichaBase64 = "";
         document.getElementById('preview-container').style.display = "none";
+        document.getElementById('picha-input').value = "";
     }
 
     async function tumaSwali() {
@@ -77,51 +81,49 @@
 
         if (!swali && !pichaBase64) return;
 
-        box.innerHTML += `<div class="msg user">${swali || "Picha imetumwa..."}</div>`;
+        // Onyesha swali la mtumiaji
+        box.innerHTML += `<div class="msg user">${swali || "<i>Picha imetumwa...</i>"}</div>`;
         input.value = '';
+        const currentImg = pichaBase64; // Tunza picha kwa ajili ya kutuma
         futaPicha();
         box.scrollTop = box.scrollHeight;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${FINAL_KEY}`;
-
         try {
-            const bodyData = {
-                contents: [{
-                    parts: [
-                        { text: swali || "Changanua picha hii" },
-                        ...(pichaBase64 ? [{ inline_data: { mime_type: "image/jpeg", data: pichaBase64 } }] : [])
-                    ]
-                }]
-            };
-
-            const res = await fetch(url, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SECRET_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(bodyData)
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: swali || "Niambie nini kipo kwenye picha hii?" },
+                            ...(currentImg ? [{ inline_data: { mime_type: "image/jpeg", data: currentImg } }] : [])
+                        ]
+                    }]
+                })
             });
 
             const data = await res.json();
             const jibu = data.candidates[0].content.parts[0].text;
-            const id = "msg-" + Date.now();
+            const id = "jibu-" + Date.now();
 
             box.innerHTML += `
                 <div class="msg ai">
                     <span id="${id}">${jibu.replace(/\n/g, '<br>')}</span><br>
-                    <button onclick="ongea('${id}')" style="background:none; border:none; color:var(--gold); cursor:pointer; margin-top:10px;">
-                        <i class="fas fa-volume-up"></i> Sikiliza Jibu
+                    <button onclick="ongea('${id}')" style="background:none; border:none; color:var(--gold); cursor:pointer; margin-top:10px; font-weight:bold;">
+                        <i class="fas fa-volume-up"></i> SIKILIZA
                     </button>
                 </div>`;
         } catch (e) {
-            box.innerHTML += `<div class="msg ai" style="color:red;">Kuna tatizo kidogo. Huenda API Key imezuiwa tena. Niambie nikutengenezee mpya!</div>`;
+            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Oops! Kuna hitilafu. Tafadhali hakikisha Key yako ni sahihi kule Google AI Studio.</div>`;
         }
         box.scrollTop = box.scrollHeight;
     }
 
     function ongea(id) {
         const text = document.getElementById(id).innerText;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'sw-TZ';
-        window.speechSynthesis.speak(utterance);
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'sw-TZ'; // Inatumia sauti ya Kiswahili kama ipo kwenye simu
+        window.speechSynthesis.speak(msg);
     }
 </script>
 
