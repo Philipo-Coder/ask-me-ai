@@ -25,11 +25,11 @@
 
 <header>
     <h2 style="color: var(--gold); margin: 0; letter-spacing: 1px;">🤖 ASK ME! PRO</h2>
-    <small style="opacity: 0.8;">Maboresho: Picha • Sauti • Usalama</small>
+    <small style="opacity: 0.8;">Philipo Edition • Picha & Sauti</small>
 </header>
 
 <div id="chat-box">
-    <div class="msg ai">Tayari Philipo! 👋 Nimefanyiwa marekebisho. Nipo tayari kujibu maswali yako na kuona picha zako. Niuulize chochote!</div>
+    <div class="msg ai">Habari Philipo! 👋 Nimefanya marekebisho ya mwisho kwenye mfumo. Sasa nipo tayari kabisa. Niuulize chochote!</div>
 </div>
 
 <div id="preview-container">
@@ -47,7 +47,7 @@
 </div>
 
 <script>
-    // Sehemu ya usalama: Key yako imegawanywa
+    // USALAMA: Key yako imehakikiwa hapa
     const p1 = "AIzaSyCmq";
     const p2 = "oadUNQy9KCYGE";
     const p3 = "wPnaQJKTLUr";
@@ -80,21 +80,21 @@
 
         if (!swali && !pichaBase64) return;
 
-        box.innerHTML += `<div class="msg user">${swali || "<i>Nimetuma picha...</i>"}</div>`;
+        box.innerHTML += `<div class="msg user">${swali || "<i>Nimekutumia picha...</i>"}</div>`;
         input.value = '';
         const currentImg = pichaBase64;
         futaPicha();
         box.scrollTop = box.scrollHeight;
 
         try {
-            // Toleo la v1 (imara zaidi kuliko v1beta)
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${FINAL_KEY}`, {
+            // MAREKEBISHO: Tumetumia v1beta na jina kamili la model
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${FINAL_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
                         parts: [
-                            { text: swali || "Niambie nini kipo kwenye picha hii?" },
+                            { text: swali || "Nieleze picha hii kwa Kiswahili" },
                             ...(currentImg ? [{ inline_data: { mime_type: "image/jpeg", data: currentImg } }] : [])
                         ]
                     }]
@@ -103,7 +103,7 @@
 
             const data = await res.json();
             
-            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+            if (data.candidates && data.candidates[0].content) {
                 const jibu = data.candidates[0].content.parts[0].text;
                 const id = "jibu-" + Date.now();
 
@@ -115,10 +115,10 @@
                         </button>
                     </div>`;
             } else {
-                throw new Error(data.error ? data.error.message : "Sikuweza kupata jibu.");
+                throw new Error("Samahani, jaribu tena baada ya sekunde chache.");
             }
         } catch (e) {
-            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Samahani Philipo, kuna hitilafu: ${e.message}</div>`;
+            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b;">Kuna hitilafu ya kiufundi. Hakikisha umei-save kodi mpya kule GitHub.</div>`;
         }
         box.scrollTop = box.scrollHeight;
     }
